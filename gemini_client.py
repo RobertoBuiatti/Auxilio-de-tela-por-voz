@@ -11,6 +11,7 @@ from typing import List, Optional, Tuple, Dict
 
 import google.generativeai as genai
 from PIL import Image
+import requests
 
 from config import GEMINI_API_KEY
 from utils.cache_manager import CacheManager
@@ -119,6 +120,32 @@ class GeminiClient:
         Returns:
             str: Resposta da API do Gemini em português
         """
+        # Pesquisa na internet se solicitado explicitamente
+        if "pesquise na internet" in question.lower() or "pesquisa na internet" in question.lower():
+            try:
+                query = question.lower().replace("pesquise na internet", "").replace("pesquisa na internet", "").strip()
+                if not query:
+                    return "Por favor, especifique o que deseja pesquisar na internet."
+                url = f"https://duckduckgo.com/html/?q={query}"
+                resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+                if resp.status_code == 200:
+                    from bs4 import BeautifulSoup
+                    soup = BeautifulSoup(resp.text, "html.parser")
+                    results = []
+                    for r in soup.select(".result__snippet")[:3]:
+                        results.append(r.get_text())
+                    if results:
+                        resposta = "Resultados da pesquisa na internet:\n" + "\n\n".join(results)
+                        for char in ['*', '´', '`', '"', "'"]:
+                            resposta = resposta.replace(char, "")
+                        return resposta
+                    else:
+                        return "Nenhum resultado relevante encontrado na internet."
+                else:
+                    return "Não foi possível acessar a pesquisa na internet no momento."
+            except Exception as e:
+                return f"Erro ao realizar pesquisa na internet: {e}"
+
         # Verifica cache primeiro
         cache_key = self._generate_cache_key(question, image_paths)
         cached_response = self.cache.get(cache_key)
