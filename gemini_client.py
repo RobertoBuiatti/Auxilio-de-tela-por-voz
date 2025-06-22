@@ -29,8 +29,8 @@ class GeminiClient:
             print(f"Modelo disponível: {m.name}")
         
         # Inicializa os modelos
-        self.model_pro = genai.GenerativeModel('gemini-1.5-pro')  # Modelo Pro para texto
-        self.model_vision = genai.GenerativeModel('gemini-1.5-flash')  # Modelo Vision/Flash para imagens
+        self.model_pro = genai.GenerativeModel('gemini-2.5-flash')  # Usando Gemini 2.5 Flash para texto
+        self.model_vision = genai.GenerativeModel('gemini-2.5-flash')  # Usando Gemini 2.5 Flash para imagens
         
         # Inicializa os componentes
         self.cache = CacheManager()
@@ -266,3 +266,4 @@ class GeminiClient:
             Lista de conversas que correspondem à pesquisa
         """
         return self.history.search_conversations(query)
+
