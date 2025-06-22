@@ -29,8 +29,8 @@ class GeminiClient:
             print(f"Modelo disponível: {m.name}")
         
         # Inicializa os modelos
-        self.model_pro = genai.GenerativeModel('gemini-2.5-flash')  # Usando Gemini 2.5 Flash para texto
-        self.model_vision = genai.GenerativeModel('gemini-2.5-flash')  # Usando Gemini 2.5 Flash para imagens
+        self.model_pro = genai.GenerativeModel('gemini-1.5-pro')  # Modelo Pro para texto
+        self.model_vision = genai.GenerativeModel('gemini-2.5-flash')  # Modelo 2.5 Flash para imagens
         
         # Inicializa os componentes
         self.cache = CacheManager()
