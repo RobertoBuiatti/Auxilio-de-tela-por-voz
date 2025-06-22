@@ -1,0 +1,25 @@
+# Ambiente virtual
+venv/
+env/
+.env
+
+# Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Diretório de screenshots
+screenshots/
+
+# Arquivos temporários
+*.tmp
+temp/
+*.json
+
+# Logs
+*.log
+logs/
+
+# Diretórios do sistema
+.DS_Store
+Thumbs.db
