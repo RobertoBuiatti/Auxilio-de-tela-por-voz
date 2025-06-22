@@ -96,11 +96,38 @@ class VoiceAssistant:
             self.stop()
     
     def stop(self):
-        """Para o assistente de voz."""
+        """Para o assistente de voz e limpa histórico e áudios."""
         self.running = False
         # self.speaker.stop()
         self.voice_capture.stop_listening()
-        print("Assistente finalizado.")
+
+        # Remove histórico de conversas
+        try:
+            if os.path.exists("conversation_history.db"):
+                os.remove("conversation_history.db")
+        except Exception as e:
+            print(f"Erro ao remover histórico de conversas: {e}")
+
+        # Remove áudios temporários do Gemini
+        try:
+            temp_dir = getattr(self.gemini_client, "temp_dir", None)
+            if temp_dir and os.path.exists(temp_dir):
+                for f in os.listdir(temp_dir):
+                    try:
+                        os.remove(os.path.join(temp_dir, f))
+                    except Exception as e:
+                        print(f"Erro ao remover arquivo de áudio: {e}")
+        except Exception as e:
+            print(f"Erro ao limpar áudios temporários: {e}")
+
+        # Remove resposta_gemini.mp3 se existir
+        try:
+            if os.path.exists("resposta_gemini.mp3"):
+                os.remove("resposta_gemini.mp3")
+        except Exception as e:
+            print(f"Erro ao remover resposta_gemini.mp3: {e}")
+
+        print("Assistente finalizado. Histórico e áudios removidos.")
 
 def falar(texto):
     """Converte texto em fala usando gTTS e playsound."""

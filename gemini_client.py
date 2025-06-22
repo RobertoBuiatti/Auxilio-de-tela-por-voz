@@ -177,9 +177,13 @@ class GeminiClient:
                         generation_config=generation_config
                     )
 
-                if response.text:
+                if hasattr(response, "text") and response.text:
                     response_text = response.text
-                    
+
+                    # Remove caracteres indesejados: *, ´, `, " e '
+                    for char in ['*', '´', '`', '"', "'"]:
+                        response_text = response_text.replace(char, "")
+
                     # Salva no cache
                     self.cache.set(cache_key, response_text)
                     
@@ -195,6 +199,14 @@ class GeminiClient:
                     self._save_temp_response(response_text)
                     return response_text
                 else:
+                    # Verifica se foi bloqueado por safety_ratings
+                    if hasattr(response, "candidates") and response.candidates:
+                        blocked = any(
+                            hasattr(c, "safety_ratings") and c.safety_ratings
+                            for c in response.candidates
+                        )
+                        if blocked:
+                            return "A resposta foi bloqueada por questões de segurança do modelo Gemini."
                     return "Desculpe, não consegui processar sua pergunta."
 
             except Exception as e:
